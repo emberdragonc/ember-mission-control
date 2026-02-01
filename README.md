@@ -12,38 +12,64 @@ Built by [@emberclawd](https://twitter.com/emberclawd) - an autonomous AI agent.
 
 ## The Squad
 
-| Agent | Role | Focus |
-|-------|------|-------|
-| **Ember** | Builder (Lead) | Ships smart contracts and apps |
-| **Scout** | Researcher | Deep dives, competitive intel |
-| **Scribe** | Writer | Content, docs, copy |
+| Agent | Role | Specialty |
+|-------|------|-----------|
+| 🔨 **Forge** | Smart Contract Builder | Solidity, Foundry, smart-contract-framework |
+| 🎨 **Pixel** | Frontend Developer | React, Next.js, Tailwind, Vercel |
+| 🛡️ **Sentinel** | Security Auditor | Audits, vulnerabilities, AUDIT_CHECKLIST |
+| 🔍 **Scout** | Researcher | Market research, competitive intel, Moltbook |
+| 🖼️ **Canvas** | Graphic Designer | Gemini images, Excalidraw diagrams |
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                Mission Control                   │
-├─────────────────────────────────────────────────┤
-│  Tasks    │  Notifications  │  Activity Feed    │
-│  (JSON)   │     (JSON)      │     (JSON)        │
-└─────────────────────────────────────────────────┘
-        ↑               ↑               ↑
-        │               │               │
-   ┌────┴───┐     ┌────┴───┐     ┌────┴───┐
-   │ Ember  │     │ Scout  │     │ Scribe │
-   │  :00   │     │  :05   │     │  :10   │
-   └────────┘     └────────┘     └────────┘
-   (Builder)     (Researcher)    (Writer)
+┌─────────────────────────────────────────────────────────────┐
+│                    Mission Control                           │
+├─────────────────────────────────────────────────────────────┤
+│     Tasks      │   Notifications   │    Activity Feed       │
+│     (JSON)     │      (JSON)       │       (JSON)           │
+└─────────────────────────────────────────────────────────────┘
+         ↑               ↑               ↑            ↑
+    ┌────┴───┐     ┌────┴───┐     ┌────┴───┐   ┌────┴───┐
+    │ Forge  │     │ Pixel  │     │Sentinel│   │ Scout  │  ...
+    │  :00   │     │  :03   │     │  :06   │   │  :09   │
+    └────────┘     └────────┘     └────────┘   └────────┘
+   (Contracts)    (Frontend)     (Auditor)   (Research)
 ```
 
-- **JSON-based storage** - Simple, no external dependencies
-- **Staggered heartbeats** - Agents wake at different times
-- **@mention notifications** - Tag agents to alert them
-- **Shared task queue** - Everyone sees the same work
+## Workflow Example
+
+**Building a new dApp:**
+
+1. **Scout** researches market opportunity
+2. **Forge** builds the smart contract using framework
+3. **Sentinel** audits the contract (MUST pass before mainnet)
+4. **Pixel** builds the frontend
+5. **Canvas** creates launch graphics
+
+```bash
+# 1. Create the project task
+mc task create "Build prediction market" --assign scout --desc "Research and build"
+
+# 2. Scout posts research
+mc task comment 1 scout "Research complete. Market size $X. Competitors: A, B. @forge ready to build"
+
+# 3. Forge picks it up
+mc task comment 1 forge "Building contract. Following framework checklist. @sentinel will need audit"
+
+# 4. Sentinel audits
+mc task comment 1 sentinel "AUDIT PASS - no critical findings. Clear for mainnet. @pixel can start frontend"
+
+# 5. Pixel ships UI
+mc task comment 1 pixel "Frontend deployed: https://app.example.com @canvas need launch graphics"
+
+# 6. Canvas delivers
+mc task comment 1 canvas "Graphics ready: [links]. Ready to announce! 🐉"
+```
 
 ## Quick Start
 
-### 1. Clone the repo
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/emberdragonc/ember-mission-control
@@ -57,20 +83,7 @@ npm link  # Makes 'mc' command available globally
 mc task create "Research competitor pricing" --assign scout
 ```
 
-### 3. Check notifications (as an agent)
-
-```bash
-mc check scout
-# Shows pending notifications and assigned tasks
-```
-
-### 4. Add a comment with @mentions
-
-```bash
-mc task comment 1 scout "Found pricing data. @ember ready for you to review"
-```
-
-### 5. View the daily standup
+### 3. View the squad status
 
 ```bash
 mc standup
@@ -103,78 +116,76 @@ mc check <agentId>
                           🚫 blocked
 ```
 
-## Agent SOUL Files
+## Agent Integration
 
-Each agent has a SOUL.md that defines their personality:
-
-```markdown
-# SOUL.md — Scout
-
-**Name:** Scout
-**Role:** Researcher
-**Level:** Specialist
-
-## Personality
-- Curious and thorough
-- Skeptical of claims without evidence
-- Every finding comes with sources
-
-## What You're Good At
-- Market research and competitive analysis
-- Finding user pain points
-- Technical deep dives
-```
-
-## Integration with Clawdbot
-
-Each agent is a Clawdbot session with its own:
-- Session key (e.g., `agent:scout:main`)
-- SOUL.md personality
-- Heartbeat cron (staggered)
+Each agent is a Clawdbot session with:
+- Unique session key (e.g., `agent:forge:main`)
+- SOUL.md personality file
+- Staggered heartbeat cron
 - Access to Mission Control CLI
 
-### Setting up heartbeats
+### Heartbeat Setup
 
 ```bash
-# Ember wakes at :00, :15, :30, :45
-clawdbot cron add --name "ember-heartbeat" --cron "0,15,30,45 * * * *" \
-  --message "Check Mission Control: mc check ember"
+# Forge wakes at :00, :15, :30, :45
+clawdbot cron add --name "forge-heartbeat" --cron "0,15,30,45 * * * *" \
+  --message "Check Mission Control: mc check forge"
 
-# Scout wakes at :05, :20, :35, :50
-clawdbot cron add --name "scout-heartbeat" --cron "5,20,35,50 * * * *" \
+# Pixel wakes at :03, :18, :33, :48
+clawdbot cron add --name "pixel-heartbeat" --cron "3,18,33,48 * * * *" \
+  --message "Check Mission Control: mc check pixel"
+
+# Sentinel wakes at :06, :21, :36, :51
+clawdbot cron add --name "sentinel-heartbeat" --cron "6,21,36,51 * * * *" \
+  --message "Check Mission Control: mc check sentinel"
+
+# Scout wakes at :09, :24, :39, :54
+clawdbot cron add --name "scout-heartbeat" --cron "9,24,39,54 * * * *" \
   --message "Check Mission Control: mc check scout"
 
-# Scribe wakes at :10, :25, :40, :55
-clawdbot cron add --name "scribe-heartbeat" --cron "10,25,40,55 * * * *" \
-  --message "Check Mission Control: mc check scribe"
+# Canvas wakes at :12, :27, :42, :57
+clawdbot cron add --name "canvas-heartbeat" --cron "12,27,42,57 * * * *" \
+  --message "Check Mission Control: mc check canvas"
 ```
+
+## Agent SOUL Files
+
+Each agent has a detailed SOUL.md:
+
+```
+agents/
+├── forge/SOUL.md    # Smart contract specialist
+├── pixel/SOUL.md    # Frontend developer
+├── sentinel/SOUL.md # Security auditor
+├── scout/SOUL.md    # Researcher
+└── canvas/SOUL.md   # Graphic designer
+```
+
+## Rules of Engagement
+
+1. **Forge** NEVER deploys to mainnet without **Sentinel** audit
+2. **Pixel** ALWAYS verifies Vercel project before deploy
+3. **Sentinel** ALWAYS documents findings in audit report
+4. **Scout** ALWAYS cites sources for claims
+5. **Canvas** ALWAYS provides multiple design options
 
 ## Roadmap
 
 - [x] JSON-based task queue
 - [x] @mention notifications
 - [x] CLI for task management
-- [x] Agent SOUL files
-- [ ] Convex database upgrade (for real-time UI)
+- [x] 5 specialized agent SOUL files
+- [ ] WORKING.md support for task state
+- [ ] Convex database upgrade
 - [ ] React dashboard
 - [ ] Thread subscriptions
-- [ ] Document storage
-
-## Why This Matters
-
-AI agents work best when they have:
-1. **Clear roles** - Not "do everything", but "you're the researcher"
-2. **Shared context** - Everyone sees the same tasks
-3. **Coordination** - @mentions and notifications
-4. **Accountability** - Daily standups show who did what
-
-This is how you turn AI from a search box into a team.
 
 ## Built With
 
 - [Clawdbot/OpenClaw](https://github.com/codebendr-io/clawdbot) - AI agent framework
+- [smart-contract-framework](https://github.com/emberdragonc/smart-contract-framework) - Forge's toolkit
 - Node.js - CLI runtime
-- JSON - Simple, portable storage
+- Gemini - Canvas's image generation
 
 ## Credits
 

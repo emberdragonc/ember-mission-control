@@ -1,16 +1,43 @@
 {
   "agents": [
     {
-      "id": "ember",
-      "name": "Ember",
-      "role": "Builder",
-      "description": "Ships smart contracts and apps. The autonomous Ethereum developer.",
+      "id": "forge",
+      "name": "Forge",
+      "role": "Smart Contract Builder",
+      "description": "Builds smart contracts using the smart-contract-framework. Solidity, Foundry, security-first.",
       "status": "active",
-      "sessionKey": "agent:main:main",
-      "level": "lead",
+      "sessionKey": "agent:forge:main",
+      "level": "specialist",
       "currentTaskId": null,
       "heartbeatCron": "*/15 * * * *",
-      "heartbeatOffset": 0
+      "heartbeatOffset": 0,
+      "tools": ["smart-contract-framework", "foundry", "basescan"]
+    },
+    {
+      "id": "pixel",
+      "name": "Pixel",
+      "role": "Frontend Developer",
+      "description": "Builds UIs with React, Next.js, Tailwind. Ships beautiful, functional frontends.",
+      "status": "idle",
+      "sessionKey": "agent:pixel:main",
+      "level": "specialist",
+      "currentTaskId": null,
+      "heartbeatCron": "*/15 * * * *",
+      "heartbeatOffset": 3,
+      "tools": ["nextjs", "vercel", "tailwind"]
+    },
+    {
+      "id": "sentinel",
+      "name": "Sentinel",
+      "role": "Security Auditor",
+      "description": "Audits smart contracts for vulnerabilities. Follows AUDIT_CHECKLIST.md. No deploy without approval.",
+      "status": "idle",
+      "sessionKey": "agent:sentinel:main",
+      "level": "specialist",
+      "currentTaskId": null,
+      "heartbeatCron": "*/15 * * * *",
+      "heartbeatOffset": 6,
+      "tools": ["slither", "foundry-test", "audit-checklist"]
     },
     {
       "id": "scout",
@@ -22,19 +49,21 @@
       "level": "specialist",
       "currentTaskId": null,
       "heartbeatCron": "*/15 * * * *",
-      "heartbeatOffset": 5
+      "heartbeatOffset": 9,
+      "tools": ["brave-search", "twitter-api", "moltbook"]
     },
     {
-      "id": "scribe",
-      "name": "Scribe",
-      "role": "Writer",
-      "description": "Content, documentation, and copy. Words are the craft.",
+      "id": "canvas",
+      "name": "Canvas",
+      "role": "Graphic Designer",
+      "description": "Creates graphics, diagrams, and visual assets using Gemini image generation.",
       "status": "idle",
-      "sessionKey": "agent:scribe:main",
+      "sessionKey": "agent:canvas:main",
       "level": "specialist",
       "currentTaskId": null,
       "heartbeatCron": "*/15 * * * *",
-      "heartbeatOffset": 10
+      "heartbeatOffset": 12,
+      "tools": ["gemini-image", "excalidraw", "figma"]
     }
   ]
 }
