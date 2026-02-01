@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ember Mission Control 🐉</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/convex@1.17.4/dist/browser.bundle.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -28,6 +29,8 @@
     .scrollbar-thin::-webkit-scrollbar { width: 6px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #0F172A; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #8B5CF6; border-radius: 3px; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
   </style>
 </head>
 <body class="text-gray-100 min-h-screen p-6">
@@ -38,11 +41,11 @@
         <h1 class="text-4xl font-bold text-ember-purple flex items-center gap-3">
           🐉 Ember Mission Control
         </h1>
-        <p class="text-gray-400 mt-2">Multi-agent coordination dashboard</p>
+        <p class="text-gray-400 mt-2">Multi-agent coordination dashboard <span class="text-green-400 text-sm ml-2">● Real-time</span></p>
       </div>
       <div class="text-right">
-        <div class="text-sm text-gray-500">Last updated</div>
-        <div id="last-updated" class="text-ember-purple">Loading...</div>
+        <div class="text-sm text-gray-500">Convex Status</div>
+        <div id="connection-status" class="text-yellow-400">Connecting...</div>
       </div>
     </header>
 
@@ -75,7 +78,7 @@
       <div class="card rounded-lg p-6">
         <h2 class="text-xl font-bold mb-4 text-ember-purple">🤖 Squad</h2>
         <div id="agents-list" class="space-y-3">
-          <div class="text-gray-500 text-center py-4">Loading agents...</div>
+          <div class="text-gray-500 text-center py-4 pulse">Loading agents...</div>
         </div>
       </div>
 
@@ -93,27 +96,16 @@
           </select>
         </div>
         <div id="tasks-list" class="space-y-3 max-h-96 overflow-y-auto scrollbar-thin">
-          <div class="text-gray-500 text-center py-4">Loading tasks...</div>
+          <div class="text-gray-500 text-center py-4 pulse">Loading tasks...</div>
         </div>
       </div>
     </div>
 
-    <!-- Documents & Activity Row -->
-    <div class="grid md:grid-cols-2 gap-6 mt-6">
-      <!-- Documents -->
-      <div class="card rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-4 text-ember-purple">📄 Documents</h2>
-        <div id="docs-list" class="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
-          <div class="text-gray-500 text-center py-4">Loading documents...</div>
-        </div>
-      </div>
-
-      <!-- Activity Feed -->
-      <div class="card rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-4 text-ember-purple">📊 Activity Feed</h2>
-        <div id="activity-list" class="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
-          <div class="text-gray-500 text-center py-4">Loading activity...</div>
-        </div>
+    <!-- Activity Feed -->
+    <div class="card rounded-lg p-6 mt-6">
+      <h2 class="text-xl font-bold mb-4 text-ember-purple">📊 Activity Feed</h2>
+      <div id="activity-list" class="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
+        <div class="text-gray-500 text-center py-4 pulse">Loading activity...</div>
       </div>
     </div>
 
@@ -122,10 +114,13 @@
       Built by <a href="https://twitter.com/emberclawd" class="text-ember-purple hover:underline">@emberclawd</a> 🐉
       | <a href="https://github.com/emberdragonc/ember-mission-control" class="text-ember-purple hover:underline">GitHub</a>
       | CLAWATHON Entry
+      | Powered by <a href="https://convex.dev" class="text-ember-orange hover:underline">Convex</a>
     </footer>
   </div>
 
-  <script>
+  <script type="module">
+    const CONVEX_URL = "https://careful-camel-389.convex.cloud";
+
     const statusEmoji = {
       inbox: '📥',
       assigned: '👤',
@@ -152,82 +147,55 @@
       canvas: '🖼️'
     };
 
-    const docEmoji = {
-      deliverable: '📦',
-      research: '🔍',
-      protocol: '📋',
-      audit: '🛡️'
-    };
-
-    let allData = { agents: { agents: [] }, tasks: { tasks: [] }, activity: { activities: [] }, documents: { documents: [] } };
     let taskFilter = 'all';
+    let allTasks = [];
+    let allAgents = [];
+    let allActivities = [];
+
+    // Initialize Convex client
+    const client = new convex.ConvexHttpClient(CONVEX_URL);
+    document.getElementById('connection-status').textContent = '● Connected';
+    document.getElementById('connection-status').className = 'text-green-400';
 
     async function fetchData() {
       try {
-        const res = await fetch('/api/all');
-        allData = await res.json();
-        render();
-        document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
-      } catch (e) {
-        console.error('Failed to fetch data:', e);
-        // Use demo data if API fails
-        useDemoData();
-      }
-    }
+        // Fetch all data in parallel
+        const [agents, tasks, activities] = await Promise.all([
+          client.query("agents:list"),
+          client.query("tasks:list"),
+          client.query("activities:list", { limit: 20 }),
+        ]);
 
-    function useDemoData() {
-      allData = {
-        agents: {
-          agents: [
-            { id: 'forge', name: 'Forge', role: 'Smart Contract Builder', status: 'active' },
-            { id: 'pixel', name: 'Pixel', role: 'Frontend Developer', status: 'idle' },
-            { id: 'sentinel', name: 'Sentinel', role: 'Security Auditor', status: 'idle' },
-            { id: 'scout', name: 'Scout', role: 'Researcher', status: 'active' },
-            { id: 'canvas', name: 'Canvas', role: 'Graphic Designer', status: 'idle' }
-          ]
-        },
-        tasks: {
-          tasks: [
-            { id: 1, title: 'Build Mission Control MVP', status: 'in_progress', assigneeIds: ['forge'], comments: [] },
-            { id: 2, title: 'Research CLAWATHON rules', status: 'in_progress', assigneeIds: ['scout'], comments: [] }
-          ]
-        },
-        activity: {
-          activities: [
-            { timestamp: new Date().toISOString(), agentId: 'forge', message: 'CLI v0.2 shipped!' },
-            { timestamp: new Date(Date.now() - 300000).toISOString(), agentId: 'scout', message: 'Task #2: assigned → in_progress' }
-          ]
-        },
-        documents: {
-          documents: [
-            { id: 1, title: 'CLAWATHON Rules Summary', type: 'research', taskId: 2 }
-          ]
-        }
-      };
-      render();
-      document.getElementById('last-updated').textContent = 'Demo Mode';
+        allAgents = agents || [];
+        allTasks = tasks || [];
+        allActivities = activities || [];
+
+        render();
+      } catch (e) {
+        console.error('Failed to fetch:', e);
+        document.getElementById('connection-status').textContent = '● Error';
+        document.getElementById('connection-status').className = 'text-red-400';
+      }
     }
 
     function render() {
       renderAgents();
       renderTasks();
       renderActivity();
-      renderDocs();
       updateStats();
     }
 
     function renderAgents() {
-      const agents = allData.agents?.agents || [];
       const container = document.getElementById('agents-list');
       
-      if (agents.length === 0) {
+      if (allAgents.length === 0) {
         container.innerHTML = '<div class="text-gray-500 text-center py-4">No agents configured</div>';
         return;
       }
 
-      container.innerHTML = agents.map(a => {
+      container.innerHTML = allAgents.map(a => {
         const statusDot = a.status === 'active' ? '🟢' : a.status === 'blocked' ? '🔴' : '⚪';
-        const emoji = agentEmoji[a.id] || '🤖';
+        const emoji = agentEmoji[a.agentId] || '🤖';
         return `
           <div class="flex items-center gap-3 p-3 bg-ember-darker rounded-lg hover:bg-ember-dark transition-colors">
             <span class="text-2xl">${emoji}</span>
@@ -242,7 +210,7 @@
     }
 
     function renderTasks() {
-      let tasks = allData.tasks?.tasks || [];
+      let tasks = allTasks;
       
       if (taskFilter !== 'all') {
         tasks = tasks.filter(t => t.status === taskFilter);
@@ -259,15 +227,14 @@
         const emoji = statusEmoji[t.status] || '📋';
         const color = statusColors[t.status] || 'text-gray-400';
         const assignees = t.assigneeIds?.length > 0 ? t.assigneeIds.map(a => `@${a}`).join(', ') : 'Unassigned';
-        const commentCount = t.comments?.length || 0;
         return `
           <div class="p-3 bg-ember-darker rounded-lg hover:bg-ember-dark transition-colors">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3 min-w-0 flex-1">
                 <span class="text-xl">${emoji}</span>
                 <div class="min-w-0">
-                  <div class="font-semibold truncate">#${t.id} ${t.title}</div>
-                  <div class="text-sm text-gray-400">${assignees} ${commentCount > 0 ? `• 💬 ${commentCount}` : ''}</div>
+                  <div class="font-semibold truncate">${t.title}</div>
+                  <div class="text-sm text-gray-400">${assignees}</div>
                 </div>
               </div>
               <span class="text-sm ${color} whitespace-nowrap ml-2">${t.status.replace('_', ' ')}</span>
@@ -278,16 +245,15 @@
     }
 
     function renderActivity() {
-      const activities = (allData.activity?.activities || []).slice(-10).reverse();
       const container = document.getElementById('activity-list');
       
-      if (activities.length === 0) {
+      if (allActivities.length === 0) {
         container.innerHTML = '<div class="text-gray-500 text-center py-4">No activity yet</div>';
         return;
       }
 
-      container.innerHTML = activities.map(a => {
-        const time = new Date(a.timestamp).toLocaleTimeString();
+      container.innerHTML = allActivities.map(a => {
+        const time = new Date(a.createdAt).toLocaleTimeString();
         return `
           <div class="text-sm p-2 bg-ember-darker rounded">
             <span class="text-gray-500">[${time}]</span>
@@ -298,35 +264,12 @@
       }).join('');
     }
 
-    function renderDocs() {
-      const docs = allData.documents?.documents || [];
-      const container = document.getElementById('docs-list');
-      
-      if (docs.length === 0) {
-        container.innerHTML = '<div class="text-gray-500 text-center py-4">No documents yet</div>';
-        return;
-      }
-
-      container.innerHTML = docs.map(d => {
-        const emoji = docEmoji[d.type] || '📄';
-        const taskRef = d.taskId ? `#${d.taskId}` : '';
-        return `
-          <div class="text-sm p-2 bg-ember-darker rounded flex items-center gap-2">
-            <span>${emoji}</span>
-            <span class="text-gray-300 flex-1 truncate">${d.title}</span>
-            ${taskRef ? `<span class="text-ember-purple text-xs">${taskRef}</span>` : ''}
-          </div>
-        `;
-      }).join('');
-    }
-
     function updateStats() {
-      const tasks = allData.tasks?.tasks || [];
-      document.getElementById('stat-inbox').textContent = tasks.filter(t => t.status === 'inbox').length;
-      document.getElementById('stat-assigned').textContent = tasks.filter(t => t.status === 'assigned').length;
-      document.getElementById('stat-progress').textContent = tasks.filter(t => t.status === 'in_progress').length;
-      document.getElementById('stat-review').textContent = tasks.filter(t => t.status === 'review').length;
-      document.getElementById('stat-done').textContent = tasks.filter(t => t.status === 'done').length;
+      document.getElementById('stat-inbox').textContent = allTasks.filter(t => t.status === 'inbox').length;
+      document.getElementById('stat-assigned').textContent = allTasks.filter(t => t.status === 'assigned').length;
+      document.getElementById('stat-progress').textContent = allTasks.filter(t => t.status === 'in_progress').length;
+      document.getElementById('stat-review').textContent = allTasks.filter(t => t.status === 'review').length;
+      document.getElementById('stat-done').textContent = allTasks.filter(t => t.status === 'done').length;
     }
 
     // Event listeners
@@ -337,7 +280,7 @@
 
     // Initial fetch and auto-refresh
     fetchData();
-    setInterval(fetchData, 10000); // Refresh every 10 seconds
+    setInterval(fetchData, 5000); // Refresh every 5 seconds
   </script>
 </body>
 </html>
