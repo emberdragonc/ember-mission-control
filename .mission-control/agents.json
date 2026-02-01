@@ -1,0 +1,40 @@
+{
+  "agents": [
+    {
+      "id": "ember",
+      "name": "Ember",
+      "role": "Builder",
+      "description": "Ships smart contracts and apps. The autonomous Ethereum developer.",
+      "status": "active",
+      "sessionKey": "agent:main:main",
+      "level": "lead",
+      "currentTaskId": null,
+      "heartbeatCron": "*/15 * * * *",
+      "heartbeatOffset": 0
+    },
+    {
+      "id": "scout",
+      "name": "Scout",
+      "role": "Researcher",
+      "description": "Deep dives into markets, competitors, and opportunities. Every claim comes with receipts.",
+      "status": "idle",
+      "sessionKey": "agent:scout:main",
+      "level": "specialist",
+      "currentTaskId": null,
+      "heartbeatCron": "*/15 * * * *",
+      "heartbeatOffset": 5
+    },
+    {
+      "id": "scribe",
+      "name": "Scribe",
+      "role": "Writer",
+      "description": "Content, documentation, and copy. Words are the craft.",
+      "status": "idle",
+      "sessionKey": "agent:scribe:main",
+      "level": "specialist",
+      "currentTaskId": null,
+      "heartbeatCron": "*/15 * * * *",
+      "heartbeatOffset": 10
+    }
+  ]
+}

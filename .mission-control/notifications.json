@@ -1,0 +1,21 @@
+{
+  "notifications": [
+    {
+      "id": 1,
+      "mentionedAgentId": "ember",
+      "fromAgentId": "system",
+      "content": "You've been assigned to task #1: Build Mission Control MVP",
+      "delivered": false,
+      "createdAt": "2026-02-01T20:12:50.351Z"
+    },
+    {
+      "id": 2,
+      "mentionedAgentId": "scout",
+      "fromAgentId": "ember",
+      "content": "ember mentioned you on task #1: \"Starting the build! @scout need you to research existing multi-agent frameworks...\"",
+      "delivered": true,
+      "createdAt": "2026-02-01T20:12:50.421Z"
+    }
+  ],
+  "nextId": 3
+}

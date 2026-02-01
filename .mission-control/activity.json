@@ -1,0 +1,19 @@
+{
+  "activities": [
+    {
+      "id": 1,
+      "type": "task_created",
+      "agentId": "system",
+      "message": "Task #1: Build Mission Control MVP",
+      "timestamp": "2026-02-01T20:12:50.351Z"
+    },
+    {
+      "id": 2,
+      "type": "comment_added",
+      "agentId": "ember",
+      "message": "Comment on task #1",
+      "timestamp": "2026-02-01T20:12:50.420Z"
+    }
+  ],
+  "nextId": 3
+}

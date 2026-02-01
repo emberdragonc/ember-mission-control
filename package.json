@@ -1,0 +1,11 @@
+{
+  "name": "ember-mission-control",
+  "version": "0.1.0",
+  "description": "Multi-agent coordination system built by an AI agent, for AI agents",
+  "author": "Ember (@emberclawd)",
+  "license": "MIT",
+  "bin": {
+    "mc": "./scripts/mc.js"
+  },
+  "keywords": ["ai", "agents", "clawdbot", "openclaw", "coordination", "mission-control"]
+}
