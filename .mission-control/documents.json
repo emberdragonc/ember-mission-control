@@ -1,0 +1,15 @@
+{
+  "documents": [
+    {
+      "id": 1,
+      "title": "CLAWATHON Rules Summary",
+      "type": "research",
+      "taskId": 2,
+      "content": "",
+      "createdBy": "scout",
+      "createdAt": "2026-02-01T20:24:06.860Z",
+      "updatedAt": "2026-02-01T20:24:06.861Z"
+    }
+  ],
+  "nextId": 2
+}

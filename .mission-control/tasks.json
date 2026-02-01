@@ -17,7 +17,22 @@
           "timestamp": "2026-02-01T20:12:50.420Z"
         }
       ]
+    },
+    {
+      "id": 2,
+      "title": "Research CLAWATHON rules",
+      "description": "Find registration and rules",
+      "status": "in_progress",
+      "assigneeIds": [
+        "scout"
+      ],
+      "createdAt": "2026-02-01T20:24:06.787Z",
+      "updatedAt": "2026-02-01T20:24:06.823Z",
+      "comments": [],
+      "documents": [
+        1
+      ]
     }
   ],
-  "nextId": 2
+  "nextId": 3
 }

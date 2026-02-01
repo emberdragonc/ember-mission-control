@@ -15,7 +15,15 @@
       "content": "ember mentioned you on task #1: \"Starting the build! @scout need you to research existing multi-agent frameworks...\"",
       "delivered": true,
       "createdAt": "2026-02-01T20:12:50.421Z"
+    },
+    {
+      "id": 3,
+      "mentionedAgentId": "scout",
+      "fromAgentId": "system",
+      "content": "📋 New task assigned: #2 - Research CLAWATHON rules",
+      "delivered": false,
+      "createdAt": "2026-02-01T20:24:06.788Z"
     }
   ],
-  "nextId": 3
+  "nextId": 4
 }

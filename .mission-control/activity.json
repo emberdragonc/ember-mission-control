@@ -13,7 +13,28 @@
       "agentId": "ember",
       "message": "Comment on task #1",
       "timestamp": "2026-02-01T20:12:50.420Z"
+    },
+    {
+      "id": 3,
+      "type": "task_created",
+      "agentId": "system",
+      "message": "Task #2: Research CLAWATHON rules",
+      "timestamp": "2026-02-01T20:24:06.787Z"
+    },
+    {
+      "id": 4,
+      "type": "task_updated",
+      "agentId": "scout",
+      "message": "Task #2: assigned → in_progress",
+      "timestamp": "2026-02-01T20:24:06.824Z"
+    },
+    {
+      "id": 5,
+      "type": "doc_created",
+      "agentId": "scout",
+      "message": "📄 Created: CLAWATHON Rules Summary (research)",
+      "timestamp": "2026-02-01T20:24:06.861Z"
     }
   ],
-  "nextId": 3
+  "nextId": 6
 }
